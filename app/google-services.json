@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "604364049005",
+    "firebase_url": "https://akash-vidya-default-rtdb.firebaseio.com",
+    "project_id": "akash-vidya",
+    "storage_bucket": "akash-vidya.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604364049005:android:ace6053dafb5ee46080d64",
+        "android_client_info": {
+          "package_name": "com.example.akashvidya"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "604364049005-87mg46q3gurrpfnev4fl73fr2p2ff26b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.akashvidya",
+            "certificate_hash": "b0fc4640221e4e2782407e77dd8db8ff8ae7a5de"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHJ20L6T_X5RzBVjEpFpSnjXFyhCjUmJ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
