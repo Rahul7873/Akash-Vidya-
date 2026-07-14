@@ -83,10 +83,10 @@ class Profile_Create : AppCompatActivity() {
                         sharedPreferences.edit().putBoolean("profileCreated", true).apply()
 
                         Toast.makeText(this@Profile_Create, "Profile Created Successfully", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this@Profile_Create, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        val intent = Intent(this@Profile_Create, PreferenceActivity::class.java)
+                        intent.putExtra("phoneNumber", phoneNumber)
                         startActivity(intent)
-                        finish()
+                        // No finish() to allow back navigation
                     } else {
                         Toast.makeText(this@Profile_Create, "Failed to save profile: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }

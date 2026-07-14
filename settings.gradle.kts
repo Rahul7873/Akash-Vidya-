@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Akash Vidya"
+rootProject.name = "Akash Ascent"
 include(":app")
  

@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Akash vidya</string>
+    <string name="app_name">Akash Ascent</string>
     <string name="akash_ascent">AKASH ASCENT</string>
     <string name="learn_grow_succeed">Learn. Grow. Succeed.</string>
-    <string name="welcome_message">Welcome to Akash Vidya!</string>
+    <string name="welcome_message">Welcome to Akash Ascent!</string>
     <string name="phone_number_hint">0 0 0 0 0 0 0 0 0 0</string>
     <string name="otp_hint">0 0 0 0 0 0</string>
     <string name="sign_in">SIGN IN</string>

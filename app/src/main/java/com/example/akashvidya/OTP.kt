@@ -140,22 +140,40 @@ class OTP : AppCompatActivity() {
         database.getReference("users").orderByChild("uid").equalTo(userId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    if (isFinishing || isDestroyed) return
                     if (snapshot.exists()) {
-                        // Profile already exists
+                        // Profile already exists, check for goal
+                        val userSnap = snapshot.children.first()
+                        val goalName = userSnap.child("goalName").getValue(String::class.java)
+                        val className = userSnap.child("selectedClassName").getValue(String::class.java)
+
                         val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
                         sharedPreferences.edit().putBoolean("profileCreated", true).apply()
 
-                        val intent = Intent(this@OTP, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
+                        if (goalName != null && className != null) {
+                            sharedPreferences.edit()
+                                .putBoolean("goalSet", true)
+                                .putString("userGoal", goalName)
+                                .putBoolean("classSet", true)
+                                .putString("userClass", className)
+                                .apply()
+                            val intent = Intent(this@OTP, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
+                        } else if (goalName != null && className == null) {
+                            val intent = Intent(this@OTP, ClassSelectionActivity::class.java)
+                            intent.putExtra("goalId", userSnap.child("goalId").getValue(String::class.java))
+                            startActivity(intent)
+                        } else {
+                            val intent = Intent(this@OTP, PreferenceActivity::class.java)
+                            startActivity(intent)
+                        }
                     } else {
                         // Profile does not exist, go to Profile Create
                         val intent = Intent(this@OTP, Profile_Create::class.java)
                         intent.putExtra("phoneNumber", phoneNumber)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
-                        finish()
                     }
                 }
 

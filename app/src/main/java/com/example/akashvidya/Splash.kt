@@ -24,14 +24,20 @@ class Splash : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
             val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
             val isProfileCreated = sharedPreferences.getBoolean("profileCreated", false)
+            val isGoalSet = sharedPreferences.getBoolean("goalSet", false)
+            val isClassSet = sharedPreferences.getBoolean("classSet", false)
 
-            if (isLoggedIn && isProfileCreated) {
+            if (isLoggedIn && isProfileCreated && isGoalSet && isClassSet) {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
+            } else if (isLoggedIn && isProfileCreated && !isGoalSet) {
+                val intent = Intent(this, PreferenceActivity::class.java)
+                startActivity(intent)
+            } else if (isLoggedIn && isProfileCreated && isGoalSet && !isClassSet) {
+                // Should technically have goalId, but for safety let's go to Preference to be sure
+                val intent = Intent(this, PreferenceActivity::class.java)
+                startActivity(intent)
             } else if (isLoggedIn && !isProfileCreated) {
-                // This case handles if the app was closed during profile creation
-                // We go back to phone to ensure fresh verification or we could go to Profile_Create directly
-                // For safety, let's go to phone. If already logged in, Firebase can handle it.
                 val intent = Intent(this, phone::class.java)
                 startActivity(intent)
             } else {

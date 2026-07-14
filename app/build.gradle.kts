@@ -48,5 +48,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     implementation("com.hbb20:ccp:2.7.3")
     implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
-
+    implementation(libs.glide)
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+    implementation("com.razorpay:checkout:1.6.38")
 }

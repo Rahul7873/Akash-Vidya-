@@ -5,47 +5,409 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/welcome_message"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Home Section Container -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/home_section"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/footer_bar"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello!"
-        android:textColor="@color/black"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.21"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.316" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
 
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User_name"
-        android:textColor="@color/black"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.274"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.414" />
+            <TextView
+                android:id="@+id/welcome_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/welcome_message"
+                android:textSize="20sp"
+                android:textColor="@color/gray_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/hello_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hello,"
+                android:textColor="@color/black"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/welcome_msg" />
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User"
+                android:textColor="@color/primary_blue"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/hello_text" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/user_name"
+                tools:listitem="@layout/item_layout" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- My Learning Section Container -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/learning_section"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/footer_bar"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Learning"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Your purchased courses"
+                android:textColor="@color/gray_text"
+                android:textSize="16sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_learning_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_layout" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Account Section Container -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/account_section"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/footer_bar"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Profile Info Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#EEEEEE"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/ic_account"
+                        app:tint="@color/primary_blue" />
+
+                    <TextView
+                        android:id="@+id/acc_full_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Name Loading..."
+                        android:textColor="@color/black"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/acc_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Phone Loading..."
+                        android:textColor="@color/gray_text"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- My Purchases Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="My Preferences"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_change_goal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="8dp"
+                app:strokeColor="#EEEEEE"
+                app:strokeWidth="1dp"
+                android:background="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_home"
+                        app:tint="@color/primary_blue" />
+
+                    <TextView
+                        android:id="@+id/tv_current_goal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:text="Current Goal: Loading..."
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Change"
+                        android:textColor="@color/primary_blue"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- My Purchases Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="My Purchases"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_purchases"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_layout" />
+
+            <!-- Support Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Support"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btn_help_support"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="8dp"
+                app:strokeColor="#EEEEEE"
+                app:strokeWidth="1dp"
+                android:background="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_learning"
+                        app:tint="@color/primary_blue" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Help and Support"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Logout Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_logout"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="20dp"
+                android:text="Logout"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="#FF4444"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_account"
+                app:iconGravity="textStart"
+                app:iconTint="@color/white" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Modern Footer Bar -->
+    <LinearLayout
+        android:id="@+id/footer_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/footer_height"
+        android:background="@color/white"
+        android:elevation="16dp"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Home Section -->
+        <LinearLayout
+            android:id="@+id/nav_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:id="@+id/iv_home"
+                android:layout_width="@dimen/nav_icon_size"
+                android:layout_height="@dimen/nav_icon_size"
+                android:src="@drawable/ic_home"
+                app:tint="@color/primary_blue" />
+
+            <TextView
+                android:id="@+id/tv_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Home"
+                android:textSize="12sp"
+                android:textColor="@color/primary_blue" />
+        </LinearLayout>
+
+        <!-- My Learning Section -->
+        <LinearLayout
+            android:id="@+id/nav_learning"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:id="@+id/iv_learning"
+                android:layout_width="@dimen/nav_icon_size"
+                android:layout_height="@dimen/nav_icon_size"
+                android:src="@drawable/ic_learning"
+                app:tint="@color/gray_text" />
+
+            <TextView
+                android:id="@+id/tv_learning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Learning"
+                android:textSize="12sp"
+                android:textColor="@color/gray_text" />
+        </LinearLayout>
+
+        <!-- Account Section -->
+        <LinearLayout
+            android:id="@+id/nav_account"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:id="@+id/iv_account"
+                android:layout_width="@dimen/nav_icon_size"
+                android:layout_height="@dimen/nav_icon_size"
+                android:src="@drawable/ic_account"
+                app:tint="@color/gray_text" />
+
+            <TextView
+                android:id="@+id/tv_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Account"
+                android:textSize="12sp"
+                android:textColor="@color/gray_text" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEEE"
+        app:layout_constraintBottom_toTopOf="@id/footer_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
