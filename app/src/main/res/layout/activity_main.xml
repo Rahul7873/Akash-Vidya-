@@ -54,14 +54,27 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/hello_text" />
 
+            <!-- All Courses Section -->
+            <TextView
+                android:id="@+id/tv_all_courses_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="All Courses"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/user_name" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="12dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/user_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_all_courses_label"
                 tools:listitem="@layout/item_layout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -105,6 +118,49 @@
                 android:layout_marginTop="20dp"
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_layout" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Downloads Section Container -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/downloads_section"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/footer_bar"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tv_downloads_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Downloads"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Your offline videos"
+                android:textColor="@color/gray_text"
+                android:textSize="16sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_downloads"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_video_download" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -370,6 +426,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="My Learning"
+                android:textSize="12sp"
+                android:textColor="@color/gray_text" />
+        </LinearLayout>
+
+        <!-- Downloads Section -->
+        <LinearLayout
+            android:id="@+id/nav_downloads"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:id="@+id/iv_downloads"
+                android:layout_width="@dimen/nav_icon_size"
+                android:layout_height="@dimen/nav_icon_size"
+                android:src="@drawable/ic_download"
+                app:tint="@color/gray_text" />
+
+            <TextView
+                android:id="@+id/tv_downloads"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Downloads"
                 android:textSize="12sp"
                 android:textColor="@color/gray_text" />
         </LinearLayout>

@@ -13,6 +13,7 @@ firebaseAuth = "24.1.0"
 firebaseDatabase = "22.0.1"
 firebaseStorage = "22.0.1"
 firebaseFirestore = "26.4.0"
+firebaseMessaging = "24.1.0"
 glide = "4.12.0"
 
 [libraries]
@@ -28,6 +29,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 
 [plugins]
