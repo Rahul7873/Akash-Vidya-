@@ -23,6 +23,16 @@ import com.google.firebase.database.ValueEventListener
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import org.json.JSONObject
+import androidx.lifecycle.lifecycleScope
+import android.content.Intent
+import android.net.Uri
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import androidx.core.content.FileProvider
 
 class PlaylistDetailActivity : AppCompatActivity(), PaymentResultListener {
 
@@ -33,6 +43,10 @@ class PlaylistDetailActivity : AppCompatActivity(), PaymentResultListener {
     private var playlistId: String? = null
     private var currentItem: ItemModel? = null
     private lateinit var btnBuyNow: Button
+    
+    private var userFirstName: String? = null
+    private var userLastName: String? = null
+    private var userPhoneNumber: String? = null
     
     private var isExpanded = false
     private lateinit var layoutShowMore: View
@@ -108,14 +122,41 @@ class PlaylistDetailActivity : AppCompatActivity(), PaymentResultListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (isFinishing || isDestroyed) return
                     var isPurchased = false
+                    var isCourseExpired = false
+                    
                     if (snapshot.exists()) {
                         val userSnap = snapshot.children.first()
-                        if (userSnap.child("purchased_playlists").hasChild(playlistId!!)) {
+                        
+                        userFirstName = userSnap.child("firstName").getValue(String::class.java)
+                        userLastName = userSnap.child("lastName").getValue(String::class.java)
+                        userPhoneNumber = userSnap.child("phoneNumber").getValue(String::class.java)
+
+                        val purchaseSnap = userSnap.child("purchased_playlists").child(playlistId!!)
+                        if (purchaseSnap.exists()) {
                             isPurchased = true
+                            val expiryStr = purchaseSnap.child("expiryDate").getValue(String::class.java)
+                            if (expiryStr != null) {
+                                try {
+                                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                                    val expiryDate = sdf.parse(expiryStr)
+                                    if (expiryDate != null && expiryDate.before(Date())) {
+                                        isCourseExpired = true
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
                         }
                     }
-                    btnBuyNow.visibility = if (isPurchased) View.GONE else View.VISIBLE
-                    videoAdapter.updatePurchaseStatus(isPurchased)
+                    
+                    // Hide buy button only if purchased AND NOT expired
+                    btnBuyNow.visibility = if (isPurchased && !isCourseExpired) View.GONE else View.VISIBLE
+                    if (isCourseExpired) {
+                        btnBuyNow.text = "Validity Expired - Buy Again"
+                        videoAdapter.updatePurchaseStatus(false)
+                    } else {
+                        videoAdapter.updatePurchaseStatus(isPurchased)
+                    }
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
@@ -189,7 +230,7 @@ class PlaylistDetailActivity : AppCompatActivity(), PaymentResultListener {
     private fun startPayment(item: ItemModel) {
         val checkout = Checkout()
         // Replace with your real Razorpay Key ID
-        checkout.setKeyID("rzp_test_TD1yL2jrvH9r9a")
+        checkout.setKeyID("rzp_live_TV4wOG6zm1OgDJ")
         
         try {
             val options = JSONObject()
@@ -216,12 +257,74 @@ class PlaylistDetailActivity : AppCompatActivity(), PaymentResultListener {
 
     override fun onPaymentSuccess(razorpayPaymentId: String?) {
         val userId = auth.currentUser?.uid ?: return
+        val pId = playlistId ?: return
+        val item = currentItem ?: return
+        val paymentId = razorpayPaymentId ?: "N/A"
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        val now = Date()
+        val purchaseDate = sdf.format(now)
+        
+        // Calculate Expiry
+        val calendar = Calendar.getInstance()
+        calendar.time = now
+        
+        val endDay = item.getEndDay()
+        val endMonth = item.getEndMonth()
+        
+        if (endDay > 0 && endMonth > 0 && endMonth <= 12) {
+            // Fixed Date Logic: Expires on the next occurrence of this date (e.g. 5th March)
+            calendar.set(Calendar.MONTH, endMonth - 1)
+            calendar.set(Calendar.DAY_OF_MONTH, endDay)
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            
+            // If that date has already passed this year, move to next year
+            if (calendar.time.before(now)) {
+                calendar.add(Calendar.YEAR, 1)
+            }
+        } else {
+            // Duration Logic: e.g. "6 months" or "1 year" from now
+            val months = (item.durationMonths ?: item.months ?: item.month)?.toString()?.toIntOrNull() ?: 0
+            val days = (item.durationDays ?: item.days ?: item.day)?.toString()?.toIntOrNull() ?: 0
+            
+            if (months == 0 && days == 0) {
+                calendar.add(Calendar.YEAR, 1)
+            } else {
+                if (months > 0) calendar.add(Calendar.MONTH, months)
+                if (days > 0) calendar.add(Calendar.DAY_OF_YEAR, days)
+            }
+        }
+
+        val expiryDate = sdf.format(calendar.time)
+
+        // Direct Success handling without backend verification
+        savePurchaseToFirebase(userId, pId, paymentId, purchaseDate, expiryDate)
+        
+        // Automatically generate a local invoice
+        InvoiceGenerator.generateAndOpenInvoice(
+            this,
+            paymentId,
+            purchaseDate,
+            item,
+            "${userFirstName ?: ""} ${userLastName ?: ""}".trim(),
+            userPhoneNumber ?: ""
+        )
+    }
+
+    private fun savePurchaseToFirebase(userId: String, pId: String, paymentId: String, purchaseDate: String, expiryDate: String) {
         database.getReference("users").orderByChild("uid").equalTo(userId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val userSnap = snapshot.children.first()
-                        userSnap.ref.child("purchased_playlists").child(playlistId!!).setValue(true)
+                        val purchaseData = mapOf(
+                            "paymentId" to paymentId,
+                            "purchaseDate" to purchaseDate,
+                            "expiryDate" to expiryDate,
+                            "playlistId" to pId,
+                            "isPurchased" to true
+                        )
+                        userSnap.ref.child("purchased_playlists").child(pId).setValue(purchaseData)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     Toast.makeText(this@PlaylistDetailActivity, "Purchase Successful!", Toast.LENGTH_LONG).show()

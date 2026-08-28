@@ -4,8 +4,6 @@
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.AkashVidya" parent="Base.Theme.AkashVidya" />

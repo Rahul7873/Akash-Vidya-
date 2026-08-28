@@ -24,6 +24,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -385,19 +388,19 @@ class MainActivity : AppCompatActivity() {
                 override fun onDataChange(userSnapshot: DataSnapshot) {
                     if (isFinishing || isDestroyed) return
                     if (userSnapshot.exists()) {
-                        for (userSnap in userSnapshot.children) {
-                            val purchasedIds = mutableListOf<String>()
-                            val pSnap = userSnap.child("purchased_playlists")
-                            for (idSnap in pSnap.children) {
-                                idSnap.key?.let { purchasedIds.add(it) }
-                            }
-                            
-                            if (purchasedIds.isNotEmpty()) {
-                                loadPurchasedDetails(purchasedIds)
-                            } else {
-                                purchasedList.clear()
-                                learningAdapter.notifyDataSetChanged()
-                            }
+                        val userSnap = userSnapshot.children.first()
+                        val purchaseMap = mutableMapOf<String, DataSnapshot>()
+                        val pSnap = userSnap.child("purchased_playlists")
+                        for (idSnap in pSnap.children) {
+                            idSnap.key?.let { purchaseMap[it] = idSnap }
+                        }
+                        
+                        if (purchaseMap.isNotEmpty()) {
+                            loadPurchasedDetails(purchaseMap)
+                        } else {
+                            purchasedList.clear()
+                            learningAdapter.notifyDataSetChanged()
+                            purchasedAdapter.notifyDataSetChanged()
                         }
                     }
                 }
@@ -405,18 +408,52 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    private fun loadPurchasedDetails(ids: List<String>) {
+    private fun loadPurchasedDetails(purchaseMap: Map<String, DataSnapshot>) {
         database.getReference("playlists").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (isFinishing || isDestroyed) return
                 purchasedList.clear()
+                val learningList = mutableListOf<ItemModel>()
+                
                 for (itemSnap in snapshot.children) {
                     val item = itemSnap.getValue(ItemModel::class.java)
-                    if (item != null && ids.contains(item.playlistId)) {
-                        purchasedList.add(item)
+                    val pId = item?.playlistId ?: itemSnap.key
+                    if (item != null && purchaseMap.containsKey(pId)) {
+                        val purchaseSnap = purchaseMap[pId]
+                        val expiryStr = purchaseSnap?.child("expiryDate")?.getValue(String::class.java)
+                        
+                        var isExpired = false
+                        if (expiryStr != null) {
+                            try {
+                                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                                val expiryDate = sdf.parse(expiryStr)
+                                if (expiryDate != null && expiryDate.before(Date())) {
+                                    isExpired = true
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+
+                        val updatedItem = item.copy(
+                            playlistId = pId,
+                            paymentId = purchaseSnap?.child("paymentId")?.getValue(String::class.java),
+                            purchaseDate = purchaseSnap?.child("purchaseDate")?.getValue(String::class.java),
+                            expiryDate = expiryStr,
+                            isExpired = isExpired
+                        )
+                        purchasedList.add(updatedItem)
+                        if (!isExpired) {
+                            learningList.add(updatedItem)
+                        }
                     }
                 }
-                learningAdapter.notifyDataSetChanged()
+                
+                // Update Learning section (only non-expired)
+                learningAdapter = ItemAdapter(learningList)
+                findViewById<RecyclerView>(R.id.rv_learning_items).adapter = learningAdapter
+                
+                // Update Account section (shows all, including expired)
                 purchasedAdapter.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {}

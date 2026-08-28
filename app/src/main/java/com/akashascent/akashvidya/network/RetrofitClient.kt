@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
     // Your backend URL
     private const val BASE_URL = "https://otp-apitxt.onrender.com"
+    private const val PAYMENT_BASE_URL = "https://your-payment-api.com" // Update with your actual payment verification URL
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -23,5 +24,14 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(OtpApiService::class.java)
+    }
+
+    val paymentApiService: PaymentApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(PAYMENT_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(PaymentApiService::class.java)
     }
 }
